@@ -444,15 +444,15 @@ class Trainer:
             checkpoint = torch.load(f, map_location="cpu")
         load_state_dict_into_model(
             model=self.model,
-            state_dict=checkpoint["model"],
+            state_dict=checkpoint,
             ignore_missing_keys=self.checkpoint_conf.skip_saving_parameters,
         )
 
-        self.optim.optimizer.load_state_dict(checkpoint["optimizer"])
-        self.loss.load_state_dict(checkpoint["loss"], strict=True)
-        self.epoch = checkpoint["epoch"]
-        self.steps = checkpoint["steps"]
-        self.ckpt_time_elapsed = checkpoint.get("time_elapsed")
+        # self.optim.optimizer.load_state_dict(checkpoint["optimizer"])
+        # self.loss.load_state_dict(checkpoint["loss"], strict=True)
+        # self.epoch = checkpoint["epoch"]
+        # self.steps = checkpoint["steps"]
+        # self.ckpt_time_elapsed = checkpoint.get("time_elapsed")
 
         if self.optim_conf.amp.enabled and "scaler" in checkpoint:
             self.scaler.load_state_dict(checkpoint["scaler"])

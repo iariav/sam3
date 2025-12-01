@@ -327,7 +327,7 @@ def check_load_state_dict_errors(
 def load_state_dict_into_model(
     state_dict: Dict,
     model: nn.Module,
-    strict: bool = True,
+    strict: bool = False,
     ignore_missing_keys: List[str] = None,
     ignore_unexpected_keys: List[str] = None,
     checkpoint_kernels: List[Callable] = None,
@@ -342,17 +342,42 @@ def load_state_dict_into_model(
         strict: raise if the state_dict has missing state keys
         ignore_missing_keys: unix pattern of keys to ignore
     """
+
+    def strip_first_segment(key: str) -> str:
+        """
+        Remove everything up to and including the first '.' in the key.
+        If there is no '.', return the key unchanged.
+        """
+        dot_index = key.find('.')
+        if dot_index == -1:
+            return key
+        return key[dot_index + 1:]
+
+    def transform_keys(d: dict) -> dict:
+        """
+        Return a new dict with keys transformed by strip_first_segment.
+        Values are kept as-is.
+        """
+        new_dict = {}
+        for k, v in d.items():
+            new_key = strip_first_segment(k)
+            new_dict[new_key] = v
+        return new_dict
+
+    new_state_dict = transform_keys(state_dict)
     # Apply kernels
     if checkpoint_kernels is not None:
         for f in checkpoint_kernels:
             state_dict = f(state_dict=state_dict)
-    missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+
+
+    missing_keys, unexpected_keys = model.load_state_dict(new_state_dict, strict=False)
 
     check_load_state_dict_errors(
         missing_keys,
         unexpected_keys,
         strict=strict,
         ignore_missing_keys=ignore_missing_keys,
-        ignore_unexpected_keys=ignore_unexpected_keys,
+        ignore_unexpected_keys=unexpected_keys,
     )
     return model

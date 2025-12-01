@@ -854,7 +854,7 @@ def visualize_prompt_overlay(
 
 
 def plot_results(img, results):
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(24, 16))
     plt.imshow(img)
     nb_objects = len(results["scores"])
     print(f"found {nb_objects} object(s)")
@@ -872,6 +872,8 @@ def plot_results(img, results):
             color=color,
             relative_coords=False,
         )
+
+    plt.show(block=True)
 
 
 def single_visualization(img, anns, title):
