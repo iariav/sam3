@@ -55,7 +55,7 @@ def overlay_masks(image, masks):
 def main():
     # Image 1, we'll use two text prompts
 
-    video_path = "/ssd_data/edge/Demo/2.mp4"
+    video_path = "/ssd_data/edge/full_vids/26.05.2025_173249_vis_video.mp4"
 
     print("Reading video file {}:".format(video_path))
     print('*' * (len(video_path) + 20))
@@ -100,7 +100,7 @@ def main():
     print('*' * len('Start analyzing video:'))
     start = time.time()
 
-    prompts = ["a red car", "person"]
+    prompts = ["arabic graffiti", "person"]
 
     for frame in tqdm(video_frames_for_vis):
 
@@ -112,7 +112,6 @@ def main():
         images = [img] * len(prompts)  # This doesn't duplicate the actual image data
         # Collate then move to cuda
         inputs = processor(images=images, text=prompts, return_tensors="pt").to(device)
-
         # Forward. Note that the first forward will be very slow due to compilation
         with torch.no_grad():
             outputs = model(**inputs)

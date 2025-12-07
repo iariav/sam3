@@ -860,7 +860,7 @@ def plot_results(img, results):
     print(f"found {nb_objects} object(s)")
     for i in range(nb_objects):
         color = COLORS[i % len(COLORS)]
-        plot_mask(results["masks"][i].squeeze(0).cpu(), color=color)
+        # plot_mask(results["masks"][i].squeeze(0).cpu(), color=color)
         w, h = img.size
         prob = results["scores"][i].item()
         plot_bbox(
@@ -875,6 +875,27 @@ def plot_results(img, results):
 
     plt.show(block=True)
 
+def plot_results_with_label(img, results):
+    plt.figure(figsize=(24, 16))
+    plt.imshow(img)
+    nb_objects = len(results["scores"])
+    print(f"found {nb_objects} object(s)")
+    for i in range(nb_objects):
+        color = results["colors"][i]
+        # plot_mask(results["masks"][i].squeeze(0).cpu(), color=color)
+        w, h = img.size
+        prob = results["scores"][i]
+        plot_bbox(
+            h,
+            w,
+            results["boxes"][i],
+            text=f"(id={i}, {prob=:.2f}, label={results["labels"][i]})",
+            box_format="XYXY",
+            color=color,
+            relative_coords=False,
+        )
+
+    plt.show(block=True)
 
 def single_visualization(img, anns, title):
     """
